@@ -1,0 +1,15 @@
+# BnBWebhookAPI Configuration
+
+# Rate limiting settings
+# These settings apply to all webhooks unless overridden in webhooks.yml
+rate-limit:
+  # Maximum number of requests per period
+  requests: 5
+  # Period in seconds
+  period: 2
+
+# Debug mode (enables additional logging)
+debug: false
+
+# Don't modify this
+config-version: 1

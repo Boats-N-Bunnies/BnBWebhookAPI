@@ -1,0 +1,10 @@
+name: BnBWebhookAPI
+version: '${project.version}'
+main: com.boatsnbunnies.BnBWebhookAPI
+api-version: '1.13'
+description: '${project.description}'
+authors: [BoatsNBunnies]
+website: https://github.com/boatsnbunnies/BnBWebhookAPI
+softdepend: []
+commands: {}
+permissions: {}
