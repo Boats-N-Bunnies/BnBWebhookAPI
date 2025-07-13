@@ -80,7 +80,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.boatsnbunnies:BnBWebhookAPI:1.0'
+    compileOnly 'com.github.Boats-N-Bunnies:BnBWebhookAPI:v1.1'
 }
 ```
 
