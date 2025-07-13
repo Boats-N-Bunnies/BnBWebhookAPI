@@ -56,7 +56,7 @@ public class WebhookServiceTest {
                 .build();
         
         // Execute
-        CompletableFuture<WebhookResponse> future = webhookService.send(webhookName, embed);
+        CompletableFuture<WebhookResponse> future = webhookService.send(webhookName, null, embed);
         WebhookResponse response = future.get();
         
         // Verify

@@ -53,8 +53,8 @@ public class WebhookService {
      * @param embed The embed to send
      * @return A CompletableFuture that will be completed with the response
      */
-    public CompletableFuture<WebhookResponse> send(String webhookName, WebhookEmbed embed) {
-        return send(webhookName, Collections.singletonList(embed));
+    public CompletableFuture<WebhookResponse> send(String webhookName, String content, WebhookEmbed embed) {
+        return send(webhookName, content, Collections.singletonList(embed));
     }
 
     /**
@@ -64,7 +64,7 @@ public class WebhookService {
      * @param embeds The embeds to send
      * @return A CompletableFuture that will be completed with the response
      */
-    public CompletableFuture<WebhookResponse> send(String webhookName, List<WebhookEmbed> embeds) {
+    public CompletableFuture<WebhookResponse> send(String webhookName, String content, List<WebhookEmbed> embeds) {
         CompletableFuture<WebhookResponse> future = new CompletableFuture<>();
 
         // Get webhook URL
@@ -81,7 +81,7 @@ public class WebhookService {
             WebhookResponse response = WebhookResponse.failure(429, "Rate limited");
 
             // Fire rate limited event
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 WebhookEvent event = new WebhookEvent(webhookName, embeds, response, WebhookEvent.WebhookEventType.RATE_LIMITED);
                 Bukkit.getPluginManager().callEvent(event);
             });
@@ -93,7 +93,7 @@ public class WebhookService {
         // Create JSON payload
         String json;
         try {
-            json = createJsonPayload(embeds);
+            json = createJsonPayload(content, embeds);
         } catch (JsonProcessingException e) {
             WebhookResponse response = WebhookResponse.failure(400, "Failed to create JSON payload: " + e.getMessage());
             future.complete(response);
@@ -109,7 +109,7 @@ public class WebhookService {
 
         // Fire pre-send event
         WebhookResponse preResponse = WebhookResponse.success(0, "Preparing to send webhook");
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             WebhookEvent event = new WebhookEvent(webhookName, embeds, preResponse, WebhookEvent.WebhookEventType.PRE_SEND);
             Bukkit.getPluginManager().callEvent(event);
         });
@@ -132,7 +132,7 @@ public class WebhookService {
                         ? WebhookEvent.WebhookEventType.SENT
                         : WebhookEvent.WebhookEventType.FAILED;
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     WebhookEvent event = new WebhookEvent(webhookName, embeds, webhookResponse, eventType);
                     Bukkit.getPluginManager().callEvent(event);
                 });
@@ -142,7 +142,7 @@ public class WebhookService {
                 WebhookResponse webhookResponse = WebhookResponse.failure(500, "Failed to send webhook: " + e.getMessage());
 
                 // Fire failed event
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     WebhookEvent event = new WebhookEvent(webhookName, embeds, webhookResponse, WebhookEvent.WebhookEventType.FAILED);
                     Bukkit.getPluginManager().callEvent(event);
                 });
@@ -162,8 +162,13 @@ public class WebhookService {
      * @return The JSON payload
      * @throws JsonProcessingException If the JSON could not be created
      */
-    private String createJsonPayload(List<WebhookEmbed> embeds) throws JsonProcessingException {
+    private String createJsonPayload(String content, List<WebhookEmbed> embeds) throws JsonProcessingException {
         ObjectNode rootNode = objectMapper.createObjectNode();
+
+        if (content != null && !content.isEmpty()) {
+            rootNode.put("content", content);
+        }
+
         ArrayNode embedsNode = rootNode.putArray("embeds");
 
         for (WebhookEmbed embed : embeds) {

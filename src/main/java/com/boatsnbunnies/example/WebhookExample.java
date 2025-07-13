@@ -88,7 +88,7 @@ public class WebhookExample extends JavaPlugin implements Listener {
         
         // Send multiple embeds in one webhook
         webhookAPI.getWebhookService()
-                .send("example-webhook", Arrays.asList(simpleEmbed, complexEmbed))
+                .send("example-webhook", "Content Message", Arrays.asList(simpleEmbed, complexEmbed))
                 .thenAccept(response -> {
                     if (response.isSuccess()) {
                         getLogger().info("Webhook sent successfully!");
@@ -105,7 +105,7 @@ public class WebhookExample extends JavaPlugin implements Listener {
                 .build();
         
         webhookAPI.getWebhookService()
-                .send("example-webhook", singleEmbed)
+                .send("example-webhook", null, singleEmbed)
                 .thenAccept(this::handleWebhookResponse);
     }
     
