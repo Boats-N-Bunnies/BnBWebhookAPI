@@ -64,9 +64,9 @@ example-webhook:
 
 <dependencies>
     <dependency>
-        <groupId>com.github.boatsnbunnies</groupId>
+        <groupId>com.github.Boats-N-Bunnies</groupId>
         <artifactId>BnBWebhookAPI</artifactId>
-        <version>1.0</version>
+        <version>v1.1</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -107,7 +107,7 @@ WebhookEmbed embed = new WebhookEmbed.Builder()
 
 // Send the webhook
 api.getWebhookService()
-        .send("webhook-name", embed)
+        .send("webhook-name", null embed) // - null can be replaced with a string that is sent alongside the embed
         .thenAccept(response -> {
             if (response.isSuccess()) {
                 // Handle success
@@ -161,16 +161,16 @@ WebhookEmbed complexEmbed = new WebhookEmbed.Builder()
 ### Sending Webhooks
 
 ```java
-// Send a single embed
+// Send a single embed - null can be replaced with a string that is sent alongside the embed
 api.getWebhookService()
-        .send("webhook-name", embed)
+        .send("webhook-name", null, embed)
         .thenAccept(response -> {
             // Handle response
         });
 
-// Send multiple embeds
+// Send multiple embeds - null can be replaced with a string that is sent alongside the embed
 api.getWebhookService()
-        .send("webhook-name", Arrays.asList(embed1, embed2))
+        .send("webhook-name", null, Arrays.asList(embed1, embed2))
         .thenAccept(response -> {
             // Handle response
         });
